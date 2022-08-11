@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/index.ts --exec babel-node -- -x .ts"
+    "dev": "nodemon src/index.ts --exec babel-node -- -x .ts",
+    "build": "tsc && babel dist -d dist",
+    "start": "node ./dist"
   },
   "keywords": [],
   "author": "Hector Lopez <hlopezcarballo@gmail.com>",
