@@ -10,16 +10,18 @@ const app = express()
 const whitelist = ['http://localhost', 'https://heclopz-todo-app.netlify.app']
 const options: CorsOptions = {
   origin: (origin, callback) => {
-    if (whitelist.includes(origin) || !origin) {
-      callback(null, true)
-    } else {
-      callback(new Error('No permitido'))
+    if (origin) {
+      if (whitelist.includes(origin) || !origin) {
+        callback(null, true)
+      } else {
+        callback(new Error('No permitido'))
+      }
     }
   },
 }
 
 // Middlewares
-app.use(cors({ origin: ORIGIN }))
+app.use(cors(options))
 app.use(morgan('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
