@@ -3,25 +3,21 @@ import morgan from 'morgan'
 import cors, { CorsOptions } from 'cors'
 import indexRoutes from './routes/index.routes'
 import './database'
-import { ORIGIN } from './config'
 
 const app = express()
 
 const whitelist = ['http://localhost', 'https://heclopz-todo-app.netlify.app']
-const options: CorsOptions = {
+const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
-    if (origin) {
-      if (whitelist.includes(origin) || !origin) {
-        callback(null, true)
-      } else {
-        callback(new Error('No permitido'))
-      }
+    if (!origin || whitelist.includes(origin)) {
+      callback(null, true)
+    } else {
+      callback(new Error('CORS no permitido'))
     }
   },
 }
-
 // Middlewares
-app.use(cors(options))
+app.use(cors(corsOptions))
 app.use(morgan('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
