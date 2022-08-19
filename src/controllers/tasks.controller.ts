@@ -12,7 +12,6 @@ export const getTasks: Middleware = async (req, res) => {
 
 export const createTask: Middleware = async (req, res) => {
   try {
-    console.log(req.body)
     const task = await service.create(req.body)
     res.json({
       message: 'created',
