@@ -1,40 +1,46 @@
 import Task, { ITask } from '../models/Task.model'
-import { MongoServerError } from 'mongodb'
 import { HydratedDocument } from 'mongoose'
 
 export class TaskService {
-  async getAll() {
-    const tasks = await Task.find().lean()
+  async getAll(userId: string) {
+    const tasks = await Task.find({ user: userId }).lean()
     return tasks
   }
 
   async create(body: ITask) {
-    try {
-      const task: HydratedDocument<ITask> = new Task(body)
+    const task: HydratedDocument<ITask> = new Task(body)
 
-      await task.save()
+    await task.save()
 
-      return task
-    } catch (error) {
-      if (error instanceof MongoServerError) {
-        if (error.name === 'MongoServerError' && error.code === 11000) {
-          const entries = Object.entries(error.keyValue)
-          throw new Error(`Value ${entries[0]} is duplicated`)
-        }
-      }
-      throw error
-    }
+    return task
   }
 
-  async update(id: string, body: ITask) {
-    await Task.findByIdAndUpdate(id, body)
+  async update(taskId: string, userId: string, body: ITask) {
+    const task = await Task.findById(taskId)
+
+    if (!task) throw new Error('Tasks not found')
+
+    if (!userId) throw new Error('User id not provided')
+
+    if (task.user.toString() !== userId) throw new Error('User not authorized')
+
+    const updatedTask = await Task.findByIdAndUpdate(taskId, body, {
+      new: true,
+    }).lean()
+
+    return updatedTask
   }
 
-  async delete(id: string) {
-    await Task.findByIdAndDelete(id)
+  async delete(taskId: string, userId: string) {
+    const task = await Task.findById(taskId)
+
+    if (!task) throw new Error('Task not found')
+    if (task.user.toString() !== userId) throw new Error('User not authorized')
+
+    await task.remove()
   }
 
-  async deleteAll() {
-    await Task.deleteMany({})
+  async deleteAll(userId: string) {
+    await Task.deleteMany({ user: userId })
   }
 }
