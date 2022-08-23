@@ -1,15 +1,16 @@
-import { TaskModel, Task } from '../models/Task.model'
+import Task, { ITask } from '../models/Task.model'
 import { MongoServerError } from 'mongodb'
+import { HydratedDocument } from 'mongoose'
 
 export class TaskService {
   async getAll() {
-    const tasks = await TaskModel.find().lean()
+    const tasks = await Task.find().lean()
     return tasks
   }
 
-  async create(body: Task) {
+  async create(body: ITask) {
     try {
-      const task = new TaskModel(body)
+      const task: HydratedDocument<ITask> = new Task(body)
 
       await task.save()
 
@@ -25,15 +26,15 @@ export class TaskService {
     }
   }
 
-  async update(id: string, body: Task) {
-    await TaskModel.findByIdAndUpdate(id, body)
+  async update(id: string, body: ITask) {
+    await Task.findByIdAndUpdate(id, body)
   }
 
   async delete(id: string) {
-    await TaskModel.findByIdAndDelete(id)
+    await Task.findByIdAndDelete(id)
   }
 
   async deleteAll() {
-    await TaskModel.deleteMany({})
+    await Task.deleteMany({})
   }
 }

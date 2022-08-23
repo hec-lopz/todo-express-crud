@@ -1,7 +1,9 @@
 import express from 'express'
 import morgan from 'morgan'
 import cors, { CorsOptions } from 'cors'
-import indexRoutes from './routes/index.routes'
+import { errorHandler } from './middlewares/error.handler'
+import routerApi from './routes'
+import { PORT } from './config'
 import './database'
 
 const app = express()
@@ -22,6 +24,8 @@ app.use(morgan('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
-app.use(indexRoutes)
+routerApi(app)
 
-export default app
+app.use(errorHandler)
+
+app.listen(PORT, () => console.log('Server on port', PORT))

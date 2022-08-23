@@ -1,11 +1,11 @@
 import { Schema, model } from 'mongoose'
 
-export interface Task {
+export interface ITask {
   text: string
   done: boolean
 }
 
-const taskSchema = new Schema(
+const taskSchema = new Schema<ITask>(
   {
     text: {
       type: String,
@@ -24,6 +24,4 @@ const taskSchema = new Schema(
   }
 )
 
-export const TaskModel = model('Task', taskSchema)
-
-export default TaskModel
+export default model('Task', taskSchema)
