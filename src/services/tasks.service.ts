@@ -1,5 +1,6 @@
 import Task, { ITask } from '../models/Task.model'
 import { HydratedDocument } from 'mongoose'
+import boom from '@hapi/boom'
 
 export class TaskService {
   async getAll(userId: string) {
@@ -16,13 +17,19 @@ export class TaskService {
   }
 
   async update(taskId: string, userId: string, body: ITask) {
-    const task = await Task.findById(taskId)
+    let task
+    try {
+      task = await Task.findById(taskId)
+    } catch (error) {
+      throw boom.notFound('Task not found')
+    }
 
-    if (!task) throw new Error('Tasks not found')
+    if (!task) throw boom.notFound('Task not found')
 
-    if (!userId) throw new Error('User id not provided')
+    if (!userId) throw boom.badData('UserId not provided')
 
-    if (task.user.toString() !== userId) throw new Error('User not authorized')
+    if (task.user.toString() !== userId)
+      throw boom.unauthorized('User not authorized')
 
     const updatedTask = await Task.findByIdAndUpdate(taskId, body, {
       new: true,
@@ -32,12 +39,17 @@ export class TaskService {
   }
 
   async delete(taskId: string, userId: string) {
-    const task = await Task.findById(taskId)
+    try {
+      const task = await Task.findById(taskId)
 
-    if (!task) throw new Error('Task not found')
-    if (task.user.toString() !== userId) throw new Error('User not authorized')
+      if (!task) throw boom.notFound('Task not found')
+      if (task.user.toString() !== userId)
+        throw boom.unauthorized('User not authorized')
 
-    await task.remove()
+      await task.remove()
+    } catch (error) {
+      throw boom.notFound('Task not found')
+    }
   }
 
   async deleteAll(userId: string) {

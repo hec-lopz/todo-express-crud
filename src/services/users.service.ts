@@ -3,6 +3,7 @@ import { HydratedDocument } from 'mongoose'
 import { IUser, LoginUserDTO, UserDTO } from '../models/User.model'
 import User from '../models/User.model'
 import jwt from 'jsonwebtoken'
+import boom from '@hapi/boom'
 import { JWT_SECRET } from '../config'
 
 interface IUserService {
@@ -17,14 +18,14 @@ class UserService implements IUserService {
     const { name, email, password } = body
 
     if (!name || !email || !password) {
-      throw new Error('Please add all fields')
+      throw boom.badRequest('Please add all fields')
     }
 
     //Check if user exists
     const userExists = await User.findOne({ email })
 
     if (userExists) {
-      throw new Error('User already exists')
+      throw boom.conflict('User already exists')
     }
 
     // Hash password
@@ -59,7 +60,7 @@ class UserService implements IUserService {
         token: this.generateToken(user.id),
       }
     } else {
-      throw new Error('Invalid credentials')
+      throw boom.forbidden('Invalid credentials')
     }
   }
 
@@ -69,7 +70,7 @@ class UserService implements IUserService {
 
       if (user) return { _id: user.id, email: user.email, name: user.name }
     } catch (error) {
-      throw new Error('Not found')
+      throw boom.notFound('User not found')
     }
   }
 

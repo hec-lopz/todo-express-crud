@@ -15,7 +15,7 @@ export const loginUser = asyncHandler(async (req, res) => {
 })
 
 export const getMe = asyncHandler(async (req: AuthorizedRequest, res) => {
-  if (!req.locals) throw new Error('No ID provided')
+  if (!req.locals) throw new Error('req.locals issue')
   const user = await service.getMe(req.locals.id)
   res.status(200).json({ message: 'Get a user', ...user })
 })

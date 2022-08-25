@@ -1,7 +1,7 @@
 import express from 'express'
 import morgan from 'morgan'
 import cors, { CorsOptions } from 'cors'
-import { errorHandler } from './middlewares/error.handler'
+import { boomErrorHandler, errorHandler } from './middlewares/error.handler'
 import routerApi from './routes'
 import { PORT } from './config'
 import './database'
@@ -26,6 +26,7 @@ app.use(express.urlencoded({ extended: false }))
 
 routerApi(app)
 
+app.use(boomErrorHandler)
 app.use(errorHandler)
 
 app.listen(PORT, () => console.log('Server on port', PORT))

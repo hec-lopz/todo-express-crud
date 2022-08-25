@@ -1,16 +1,15 @@
-import { NextFunction, Request, Response } from 'express'
+import { Request } from 'express'
 import jwt from 'jsonwebtoken'
 import asyncHandler from 'express-async-handler'
 import { JWT_SECRET } from '../config'
+import boom from '@hapi/boom'
 
 export interface AuthorizedRequest extends Request {
   locals?: { id: string }
 }
 
 export const protect = asyncHandler(
-  async (req: AuthorizedRequest, res: Response, next: NextFunction) => {
-    if (!JWT_SECRET) throw new Error('No JWT_SECTRET')
-
+  async (req: AuthorizedRequest, res, next) => {
     const { authorization } = req.headers
     let token
 
@@ -27,12 +26,12 @@ export const protect = asyncHandler(
 
         next()
       } catch (error) {
-        throw new Error('Not authorized')
+        throw boom.unauthorized('Not authorized')
       }
     }
 
     if (!token) {
-      throw new Error('Not authorized, no token')
+      throw boom.unauthorized('Not authorized, no token')
     }
   }
 )
