@@ -8,7 +8,10 @@ import './database'
 
 const app = express()
 
-const whitelist = ['http://localhost', 'https://heclopz-todo-app.netlify.app']
+const whitelist = [
+  'http://localhost:5500',
+  'https://heclopz-todo-app.netlify.app',
+]
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
     if (!origin || whitelist.includes(origin)) {
