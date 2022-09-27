@@ -1,11 +1,12 @@
-import { Schema, model } from 'mongoose'
+import { Schema, model, Types } from 'mongoose'
 
-export interface Task {
+export interface ITask {
   text: string
   done: boolean
+  user: Types.ObjectId
 }
 
-const taskSchema = new Schema(
+const taskSchema = new Schema<ITask>(
   {
     text: {
       type: String,
@@ -17,6 +18,10 @@ const taskSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    user: {
+      type: Schema.Types.ObjectId,
+      required: true,
+    },
   },
   {
     timestamps: true,
@@ -24,6 +29,4 @@ const taskSchema = new Schema(
   }
 )
 
-export const TaskModel = model('Task', taskSchema)
-
-export default TaskModel
+export default model('Task', taskSchema)
