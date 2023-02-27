@@ -11,6 +11,7 @@ const app = express()
 const whitelist = [
   'http://localhost:5500',
   'https://heclopz-todo-app.netlify.app',
+  'https://todo.heclopz.com',
 ]
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
